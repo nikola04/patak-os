@@ -11,7 +11,7 @@ org 0x7C00
 CODE_SEG equ 0x08
 DATA_SEG equ 0x10 
 KERNEL_SEG equ 0x1000
-KERNEL_ADDR equ 0x100000 
+KERNEL_ADDR equ 0x10000
 
 main:
     cli
@@ -24,12 +24,12 @@ main:
     sti
 
     ; load kernel
-    mov ax, KERNEL_ADDR
+    mov ax, KERNEL_ADDR / 16
     mov es, ax
-    xor bx, bx      ; es:bx = 0x1000:0x0000 = 0x100000
+    xor bx, bx
 
     mov ah, 0x02       ; Read sectors
-    mov al, 8          ; 8 sectors
+    mov al, 24         ; 24 sectors
     mov ch, 0          ; Cylinder 0
     mov cl, 2          ; Sector 2 (sector 1 je boot)
     mov dh, 0          ; Head 0

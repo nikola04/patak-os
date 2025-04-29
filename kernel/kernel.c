@@ -8,5 +8,6 @@ void kmain(){
         video_memory[i * 2] = message[i];
         video_memory[i * 2 + 1] = 0x07; // White on black
     }
-    
+    while(1);
+    return;
 }

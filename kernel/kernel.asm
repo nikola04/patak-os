@@ -11,6 +11,4 @@ _start:
 
     call kmain
 
-    jmp $
-
-times 512-($-$$) db 0 ; Fill this segment with 0
+; times 512-($-$$) db 0 ; Fill this segment with 0

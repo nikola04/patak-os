@@ -16,7 +16,7 @@ BL := 		bootloader
 K := 		kernel
 
 # Flags
-CFLAGS := 	-g -m32 -ffreestanding -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
+CFLAGS := 	-g -m32 -ffreestanding -nostdlib -nostartfiles -nodefaultlibs -Wall -O0
 LDFLAGS :=	-T $(LCONFIG) --oformat binary
 
 # Files
@@ -49,7 +49,7 @@ $(K_BIN): $(OBJS) $(B)/kernel.asm.o
 # Compile c to object
 $(B)/%.o: $(K)/%.c
 	@mkdir -p $(B)
-	$(CC) -I/$(K) $(CFLAGS) -std=gnu99 -c $< -o $@
+	$(CC) $(CFLAGS) -std=gnu99 -c $< -o $@
 
 # Kernel asm
 $(B)/kernel.asm.o: $(K)/kernel.asm

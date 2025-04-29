@@ -5,80 +5,95 @@
 ; You can freely share and/or modify this program under the terms of GPL-3.
 ; See the full license text at: https://www.gnu.org/licenses/gpl-3.0.html
 
-org 0x7C00
 bits 16
+org 0x7C00
 
-start:
-    jmp main
-
-; Prints string to screen
-; Params:
-;   - ds:si string
-puts:
-    push si
-    push ax
-
-.loop:
-    lodsb
-    or al, al
-    jz .done
-
-    mov ah, 0x0e
-    mov bh, 0
-    int 0x10
-
-    jmp .loop
-
-.done:
-    pop ax
-    pop si
-    ret
-
-putln:
-    mov ah, 0x0e
-    mov al, 0x0D
-    int 0x10
-    mov al, 0x0A
-    int 0x10
-    ret
+CODE_SEG equ 0x08
+DATA_SEG equ 0x10 
+KERNEL_SEG equ 0x1000
+KERNEL_ADDR equ 0x100000 
 
 main:
-
-    ; setup data segments
-    mov ax, 0
+    cli
+    ; setup segments
+    xor ax, ax
     mov ds, ax
     mov es, ax
-
-    ; setup stack
     mov ss, ax
     mov sp, 0x7C00
+    sti
 
-    ; new line
-    call putln
+    ; load kernel
+    mov ax, KERNEL_ADDR
+    mov es, ax
+    xor bx, bx      ; es:bx = 0x1000:0x0000 = 0x100000
 
-    ; print boot message
-    mov si, boot_msg
-    call puts
+    mov ah, 0x02       ; Read sectors
+    mov al, 8          ; 8 sectors
+    mov ch, 0          ; Cylinder 0
+    mov cl, 2          ; Sector 2 (sector 1 je boot)
+    mov dh, 0          ; Head 0
+    mov dl, 0x80       ; Drive 0 (HDD)
+    int 0x13
+    jc disk_read_err
 
-    ; new line
-    call putln
+load_pm:
+    ; moving into 32bit protected mode
+    cli
 
-    ; print version message
-    mov si, version_msg
-    call puts
+    ; loading GDT
+    lgdt [gdt_descriptor]
 
-    ; double new line
-    call putln
-    call putln
+    ; Set PE bit in cr0
+    mov eax, cr0
+    or eax, 1
+    mov cr0, eax
 
+    ; jump in 32-bit mode
+    jmp CODE_SEG:init_pm32
+
+disk_read_err:
     hlt
+    ret
 
-.halt:
-    jmp .halt
+gdt_start:
+    dq 0x0000000000000000    ; Null descriptor
+    dq 0x00CF9A000000FFFF    ; Code segment: base=0, limit=4GB, execute/read
+    dq 0x00CF92000000FFFF    ; Data segment: base=0, limit=4GB, read/write
+    
+gdt_end:
 
+gdt_descriptor:
+    dw gdt_end - gdt_start - 1
+    dd gdt_start
 
-boot_msg: db 'Welcome to simpleOS', 0
-version_msg: db 'Version 0.1', 0
+; 32-bit code
+init_pm32:
+    bits 32
 
-times 510-($-$$) db 0
-dw 0xAA55
+    ; init segments
+    mov ax, DATA_SEG
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+
+    ; init stack in 32-bit mode
+    mov ebp, 0x90000
+    mov esp, ebp
+
+    ; allow A20 for more memory
+    in al, 0x92
+    or al, 2
+    out 0x92, al
+
+    mov al, 'A'
+    mov ah, 0x0f
+    mov [0xb8000], ax
+
+    ; jump to kernel
+    jmp CODE_SEG:KERNEL_ADDR
+
+times 510-($-$$) db 0 ; Fill rest of boot sector as 0
+dw 0xAA55 ; Required to recognize this as valid boot sector

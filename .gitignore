@@ -1,5 +1,6 @@
-# Built files
+# Build and bin files
 build/
+bin/
 *.img
 
 # Prerequisites

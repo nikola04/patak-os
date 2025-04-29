@@ -1,27 +1,72 @@
 # Compiler
-ASM=nasm
+ASM :=	 	nasm
+CC := 		i686-elf-gcc
+LD :=		i686-elf-ld
 
-# Directories
-SRC_DIR=bootloader
-BUILD_DIR=build
+# Config
+LCONFIG :=	linker.ld
 
 # Emulators
-QEMU = qemu-system-i386
+QEMU := 	qemu-system-i386
+
+# Directories
+B := 		build
+BI :=		bin
+BL := 		bootloader
+K := 		kernel
+
+# Flags
+CFLAGS := 	-g -m32 -ffreestanding -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
+LDFLAGS :=	-T $(LCONFIG) --oformat binary
+
+# Files
+K_BIN :=	$(BI)/kernel.bin
+B_BIN :=	$(BI)/bootloader.bin
+OS_BIN :=	$(BI)/os.bin
+
+# OBJS
+OBJS = 		\
+			$B/kernel.o\
+
+# Target
+TARGET :=	simpleos.img
+
+all: $(TARGET)
 
 # Build image
-simpleos.img: $(BUILD_DIR)/main.bin
-	cp $(BUILD_DIR)/main.bin $(BUILD_DIR)/simpleos.img
-	truncate -s 1440k simpleos.img
+$(TARGET): $(K_BIN) $(B_BIN)
+	dd if=$(B_BIN) of=$(OS_BIN) bs=512 seek=0 conv=notrunc
+	dd if=$(K_BIN) of=$(OS_BIN) bs=512 seek=1 conv=notrunc
+	dd if=/dev/zero bs=1024 count=1440 >> $(OS_BIN)
 
-# Compile asm to bin
-$(BUILD_DIR)/main.bin: $(SRC_DIR)/main.asm
-	@mkdir -p $(BUILD_DIR)
-	$(ASM) $(SRC_DIR)/main.asm -f bin -o $(BUILD_DIR)/main.bin
+	cp $(OS_BIN) $(TARGET)
 
+# Link kernel objects into bin
+$(K_BIN): $(OBJS) $(B)/kernel.asm.o
+	@mkdir -p $(BI)
+	$(LD) $(LDFLAGS) -o $@ $^
+
+# Compile c to object
+$(B)/%.o: $(K)/%.c
+	@mkdir -p $(B)
+	$(CC) -I/$(K) $(CFLAGS) -std=gnu99 -c $< -o $@
+
+# Kernel asm
+$(B)/kernel.asm.o: $(K)/kernel.asm
+	@mkdir -p $(B)
+	$(ASM) -f elf -g $< -o $@
+
+# Bootloader asm to bin
+$(B_BIN): $(BL)/main.asm
+	@mkdir -p $(BI)
+	$(ASM) -f bin $< -o $@
+
+.PHONY: qemu clean
 # Running with QEMU
 qemu:
-	$(QEMU) $(BUILD_DIR)/simpleos.img
+	$(QEMU) -drive format=raw,file=$(TARGET)
 
 # Clean build dir
 clean:
-	rm -rf $(BUILD_DIR)/*.bin $(BUILD_DIR)/*.img $(BUILD_DIR)
+	rm -rf $(B)/*.o $(B)
+	rm -rf $(BI)/*.bin $(BI)

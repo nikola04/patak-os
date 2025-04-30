@@ -1,24 +1,24 @@
-# simpleOS
-Simple x86 operating system project made for fun.
+# patakOS
+Simple x86 32bit operating system project with bootloader made for fun.
 
 # Install
 ```
-$ git clone https://github.com/nikola04/simple-os.git
+$ git clone https://github.com/nikola04/patak-os.git
 ```
 
 # Run
 ### QEMU:  
-To run make sure you have installed QEMU. There is script in Makefile for runing so just run:
+To run make sure you have installed QEMU and cros compilers from Makefile. There is script in Makefile for runing image so just run:
 ```
 $ make & make qemu
 ```
 
 # Scripts
-Compile:
+### Compile:
 ```
 $ make
 ```
-Clean build files
+### Clean up build files:
 ```
 $ make clean
 ```

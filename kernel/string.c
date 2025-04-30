@@ -1,6 +1,6 @@
 #include "defs.h"
 
-int32_t atoi(const char* str){
+int64_t atoi(const char* str){
     while(*str == ' ' || *str == '\t') // remove spaces
         str++;
     

@@ -1,13 +1,13 @@
 # Compiler
 ASM :=	 	nasm
-CC := 		i686-elf-gcc
-LD :=		i686-elf-ld
+CC := 		x86_64-elf-gcc
+LD :=		x86_64-elf-ld
 
 # Config
 LCONFIG :=	linker.ld
 
 # Emulators
-QEMU := 	qemu-system-i386
+QEMU := 	qemu-system-x86_64
 
 # Directories
 B := 		build
@@ -16,7 +16,7 @@ BL := 		bootloader
 K := 		kernel
 
 # Flags
-CFLAGS := 	-g -m32 -ffreestanding -nostdlib -nostartfiles -nodefaultlibs -Wall -O0
+CFLAGS := 	-g -m64 -ffreestanding -nostdlib -nostartfiles -nodefaultlibs -Wall -O0
 LDFLAGS :=	-T $(LCONFIG) --oformat binary
 
 # Files
@@ -40,8 +40,7 @@ all: $(TARGET)
 $(TARGET): $(K_BIN) $(B_BIN)
 	dd if=$(B_BIN) of=$(OS_BIN) bs=512 seek=0 conv=notrunc
 	dd if=$(K_BIN) of=$(OS_BIN) bs=512 seek=1 conv=notrunc
-	dd if=/dev/zero bs=1024 count=1440 >> $(OS_BIN)
-
+	truncate -s 1474560 $(OS_BIN)
 	cp $(OS_BIN) $(TARGET)
 
 # Link kernel objects into bin
@@ -57,7 +56,7 @@ $(B)/%.o: $(K)/%.c
 # Kernel asm
 $(B)/kernel.asm.o: $(K)/kernel.asm
 	@mkdir -p $(B)
-	$(ASM) -f elf -g $< -o $@
+	$(ASM) -f elf64 -g $< -o $@
 
 # Bootloader asm to bin
 $(B_BIN): $(BL)/main.asm

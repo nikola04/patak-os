@@ -15,7 +15,7 @@ void acquire(struct spinlock *);
 void release(struct spinlock *);
 
 // string.c
-int32_t atoi(const char *);
+int64_t atoi(const char *);
 size_t strlen(const char *);
 int32_t strcmp(const char *, const char *);
 char* strcpy(char *, const char *);

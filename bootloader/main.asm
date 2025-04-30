@@ -10,7 +10,8 @@ org 0x7C00
 
 CODE_SEG equ 0x08
 DATA_SEG equ 0x10
-KERNEL_SEG equ 0x1000
+STAGE2_SEG equ 0x800
+STAGE2_ADDR equ 0x8000
 KERNEL_ADDR equ 0x10000
 
 main:
@@ -31,17 +32,15 @@ main:
     mov ah, 0x02       ; Read sectors
     mov al, 24         ; 24 sectors
     mov ch, 0          ; Cylinder 0
-    mov cl, 2          ; Sector 2 (sector 1 je boot)
+    mov cl, 2          ; Sector 2 (first after boot)
     mov dh, 0          ; Head 0
     mov dl, 0x80       ; Drive 0 (HDD)
     int 0x13
+
     jc disk_read_err
 
 load_pm:
-    ; moving into 32bit protected mode
     cli
-
-    ; loading GDT
     lgdt [gdt_descriptor]
 
     ; Set PE bit in cr0
@@ -49,29 +48,32 @@ load_pm:
     or eax, 1
     mov cr0, eax
 
-    ; jump in 32-bit mode
+    ; jump to 32-bit mode
     jmp CODE_SEG:init_pm32
 
 disk_read_err:
-    hlt
-    ret
+    jmp $
 
+; -------------------------
+; Protected Mode GDT
+; -------------------------
 gdt_start:
     dq 0x0000000000000000    ; Null descriptor
     dq 0x00CF9A000000FFFF    ; Code segment: base=0, limit=4GB, execute/read
     dq 0x00CF92000000FFFF    ; Data segment: base=0, limit=4GB, read/write
-    
+
 gdt_end:
 
 gdt_descriptor:
     dw gdt_end - gdt_start - 1
     dd gdt_start
 
-; 32-bit code
+; -------------------------
+; 32-bit protected mode
+; -------------------------
 init_pm32:
     bits 32
 
-    ; init segments
     mov ax, DATA_SEG
     mov ds, ax
     mov es, ax
@@ -79,17 +81,89 @@ init_pm32:
     mov gs, ax
     mov ss, ax
 
-    ; init stack in 32-bit mode
     mov ebp, 0x90000
     mov esp, ebp
 
-    ; allow A20 for more memory
+    ; Enable A20
     in al, 0x92
     or al, 2
     out 0x92, al
 
-    ; jump to kernel
-    jmp CODE_SEG:KERNEL_ADDR
+main64:
 
-times 510-($-$$) db 0 ; Fill rest of boot sector as 0
-dw 0xAA55 ; Required to recognize this as valid boot sector
+    ; Page table for 64    
+    mov edi, 0x100000
+    xor eax, eax
+    mov ecx, 4096 * 4 / 4      ; 16 KB
+    rep stosd
+
+    ; PML4[0] = PDP @ 0x101000 | present + rw
+    mov dword [0x100000], 0x101000 | 0x03
+    ; PDP[0] = PD @ 0x102000 | present + rw
+    mov dword [0x101000], 0x102000 | 0x03
+    ; PD[0] = 2MB page @ 0x00000000 | present + rw + PS (bit 7)
+    mov dword [0x102000], 0x00000083
+
+    ; GDT long mode
+    lgdt [gdt64_descriptor]
+
+    ; enable PAE
+    mov eax, cr4
+    or eax, 1 << 5
+    mov cr4, eax
+
+    ; set CR3
+    mov eax, 0x100000
+    mov cr3, eax
+
+    ; enable long mode
+    mov ecx, 0xC0000080
+    rdmsr
+    or eax, 1 << 8
+    wrmsr
+
+    ; enable paging
+    mov eax, cr0
+    or eax, 0x80000000
+    mov cr0, eax
+
+    ; jmp in long mode
+    jmp 0x18:start64
+
+; -------------------------
+; Long Mode GDT
+; -------------------------
+align 8
+gdt64:
+    dq 0x0000000000000000          ; 0x00 - null
+    dq 0x00AF9A000000FFFF          ; 0x08 - 32-bit code (ne koristi se)
+    dq 0x00AF92000000FFFF          ; 0x10 - 32-bit data (ne koristi se)
+    dq 0x00209A0000000000          ; 0x18 - 64-bit code
+    dq 0x0000920000000000          ; 0x20 - 64-bit data
+
+gdt64_descriptor:
+    dw gdt64_end - gdt64 - 1
+    dd gdt64
+
+gdt64_end:
+
+; -------------------------
+; 64-bit kernel entry
+; -------------------------
+bits 64
+start64:
+    mov ax, 0x20
+    mov ds, ax
+    mov es, ax
+    mov ss, ax
+
+    mov rsp, 0x90000
+    mov rbp, rsp
+
+    jmp KERNEL_ADDR
+
+    hlt 
+    jmp $
+
+times 510-($-$$) db 0
+dw 0xAA55

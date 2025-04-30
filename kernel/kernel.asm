@@ -5,7 +5,7 @@
 ; You can freely share and/or modify this program under the terms of GPL-3.
 ; See the full license text at: https://www.gnu.org/licenses/gpl-3.0.html
 
-bits 32
+bits 64
 
 global _start
 extern kmain

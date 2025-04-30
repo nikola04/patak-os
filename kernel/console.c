@@ -17,9 +17,9 @@ void panic(const char *panic){
 
     const char* prefix = "\npanic: ";
     char suffix = '!';
-    for(int i = 0; i < strlen(prefix); i++)
+    for(size_t i = 0; i < strlen(prefix); i++)
         consoleputc(prefix[i]);
-    for(int i = 0; i < strlen(panic); i++)
+    for(size_t i = 0; i < strlen(panic); i++)
         consoleputc(panic[i]);
     consoleputc(suffix);
 
@@ -60,9 +60,9 @@ void consoleputc(char c){
     vgaputc(c);
 }
 
-void consolewrite(const char *buf, int len) {
+void consolewrite(const char *buf, size_t len) {
     acquire(&console.lock);
-    for(int i = 0; i < len; i++){
+    for(size_t i = 0; i < len; i++){
         consoleputc(buf[i]);
     }
     release(&console.lock);

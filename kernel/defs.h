@@ -1,10 +1,11 @@
 #ifndef DEFS_H
 #define DEFS_H
 
+#include "types.h"
 #include "spinlock.h"
 
 // console.c
-void consolewrite(const char *, int);
+void consolewrite(const char *, size_t);
 void consoleinit();
 void panic(const char *);
 
@@ -14,9 +15,9 @@ void acquire(struct spinlock *);
 void release(struct spinlock *);
 
 // string.c
-int atoi(const char *);
-int strlen(const char *);
-int strcmp(const char *, const char *);
+int32_t atoi(const char *);
+size_t strlen(const char *);
+int32_t strcmp(const char *, const char *);
 char* strcpy(char *, const char *);
 
 #endif // DEFS_H

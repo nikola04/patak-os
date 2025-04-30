@@ -1,6 +1,6 @@
 #include "defs.h"
 
-int atoi(const char* str){
+int32_t atoi(const char* str){
     while(*str == ' ' || *str == '\t') // remove spaces
         str++;
     
@@ -21,7 +21,7 @@ int atoi(const char* str){
     return number;
 }
 
-int strlen(const char* str){
+size_t strlen(const char* str){
     const char* s = str;
     while(*s != '\0'){
         s++;
@@ -29,17 +29,17 @@ int strlen(const char* str){
     return s - str;
 }
 
-int strcmp(const char* a, const char* b){
+int32_t strcmp(const char* a, const char* b){
     while(*a != '\0' && *b != '\0'){
-        if(*a != *b) return (int)*a - (int)*b;
+        if(*a != *b) return (int32_t)((unsigned char)*a - (unsigned char)*b); // 2ˆ16 enough to put ascii diff
         a++, b++;
     }
-    return (int)*a - (int)*b; 
+    return (int32_t)((unsigned char)*a - (unsigned char)*b); 
 }
 
 char* strcpy(char* dest, const char* src){
     char *d = dest;
     while((*d++ = *src++) != 0);
     *d = '\0';
-    return d;
+    return dest;
 }

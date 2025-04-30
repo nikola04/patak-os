@@ -27,6 +27,9 @@ OS_BIN :=	$(BI)/os.bin
 # OBJS
 OBJS = 		\
 			$B/kernel.o\
+			$B/spinlock.o\
+			$B/console.o\
+			$B/string.o\
 
 # Target
 TARGET :=	simpleos.img
@@ -63,7 +66,7 @@ $(B_BIN): $(BL)/main.asm
 
 .PHONY: qemu clean
 # Running with QEMU
-qemu:
+qemu: $(TARGET)
 	$(QEMU) -drive format=raw,file=$(TARGET)
 
 # Clean build dir

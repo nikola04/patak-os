@@ -5,15 +5,22 @@
 // You can freely share and/or modify this program under the terms of GPL-3.
 // See the full license text at: https://www.gnu.org/licenses/gpl-3.0.html
 #include "defs.h"
+#include "x86.h"
+
+void init();
 
 void kmain(){
-    const char *message = "Hello from kernel C!\n";
-    char *video_memory = (char *)0xb8000;
+    init();
 
-    for (int i = 0; message[i] != '\0'; i++) {
-        video_memory[i * 2] = message[i];
-        video_memory[i * 2 + 1] = 0x07; // White on black
-    }
+    const char* greet = "hello from patakOS!\n";
+    const char* version = "kernel version 0.1\n";
+
+    consolewrite(greet, strlen(greet));
+    consolewrite(version, strlen(version));
+
     while(1);
-    return;
+}
+
+void init(){
+    consoleinit();
 }

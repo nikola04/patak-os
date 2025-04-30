@@ -2,6 +2,8 @@
     "files.associations": {
         "*.ejs": "html",
         "kernel.h": "c",
-        "defs.h": "c"
+        "defs.h": "c",
+        "spinlock.h": "c",
+        "x86.h": "c"
     }
 }

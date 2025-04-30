@@ -9,7 +9,7 @@ bits 16
 org 0x7C00
 
 CODE_SEG equ 0x08
-DATA_SEG equ 0x10 
+DATA_SEG equ 0x10
 KERNEL_SEG equ 0x1000
 KERNEL_ADDR equ 0x10000
 
@@ -24,7 +24,7 @@ main:
     sti
 
     ; load kernel
-    mov ax, KERNEL_ADDR / 16
+    mov ax, KERNEL_ADDR >> 4
     mov es, ax
     xor bx, bx
 
@@ -87,10 +87,6 @@ init_pm32:
     in al, 0x92
     or al, 2
     out 0x92, al
-
-    mov al, 'A'
-    mov ah, 0x0f
-    mov [0xb8000], ax
 
     ; jump to kernel
     jmp CODE_SEG:KERNEL_ADDR

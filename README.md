@@ -1,5 +1,5 @@
 # patakOS
-Simple x86 32bit operating system project with bootloader made for fun.
+Simple x86 64bit operating system project with custom bootloader. Made for fun.
 
 # Install
 ```

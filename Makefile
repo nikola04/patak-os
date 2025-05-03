@@ -16,7 +16,7 @@ BL := 		bootloader
 K := 		kernel
 
 # Flags
-CFLAGS := 	-g -m64 -ffreestanding -nostdlib -nostartfiles -nodefaultlibs -Wall -O0
+CFLAGS := 	-g -m64 -ffreestanding -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -lgcc
 LDFLAGS :=	-T $(LCONFIG) --oformat binary
 
 # Files
@@ -26,7 +26,12 @@ OS_BIN :=	$(BI)/os.bin
 
 # OBJS
 OBJS = 		\
+			$B/kernel.asm.o\
+			$B/kbdintr.asm.o\
 			$B/kernel.o\
+			$B/ps2kbd.o\
+			$B/pic.o\
+			$B/idt.o\
 			$B/spinlock.o\
 			$B/console.o\
 			$B/string.o\
@@ -44,7 +49,7 @@ $(TARGET): $(K_BIN) $(B_BIN)
 	cp $(OS_BIN) $(TARGET)
 
 # Link kernel objects into bin
-$(K_BIN): $(OBJS) $(B)/kernel.asm.o
+$(K_BIN): $(OBJS)
 	@mkdir -p $(BI)
 	$(LD) $(LDFLAGS) -o $@ $^
 
@@ -53,8 +58,8 @@ $(B)/%.o: $(K)/%.c
 	@mkdir -p $(B)
 	$(CC) $(CFLAGS) -std=gnu99 -c $< -o $@
 
-# Kernel asm
-$(B)/kernel.asm.o: $(K)/kernel.asm
+# Compile asm to objects
+$(B)/%.asm.o: $(K)/%.asm
 	@mkdir -p $(B)
 	$(ASM) -f elf64 -g $< -o $@
 
@@ -66,7 +71,7 @@ $(B_BIN): $(BL)/main.asm
 .PHONY: qemu clean
 # Running with QEMU
 qemu: $(TARGET)
-	$(QEMU) -drive format=raw,file=$(TARGET)
+	$(QEMU) -usb -device nec-usb-xhci -drive format=raw,file=$(TARGET)
 
 # Clean build dir
 clean:

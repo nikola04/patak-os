@@ -4,23 +4,23 @@ SECTIONS
 {
     . = 0x10000;
 
-    .text :
-    {
-        *(.text)
+    _kernel_start = .;
+    
+    .text : {
+        *(.text*)
     }
 
-    .rodata :
-    {
-        *(.rodata)
+    .rodata : {
+        *(.rodata*)
     }
 
-    .data :
-    {
-        *(.data)
+    .data : {
+        *(.data*)
     }
 
-    .bss :
-    {
-        *(.bss COMMON)
+    .bss : { 
+        *(.bss)
     }
+
+    _kernel_end = .;
 }

@@ -4,6 +4,12 @@
         "kernel.h": "c",
         "defs.h": "c",
         "spinlock.h": "c",
-        "x86.h": "c"
+        "x86.h": "c",
+        "pci.h": "c",
+        "types.h": "c",
+        "vm.h": "c",
+        "idt.h": "c",
+        "kbd.h": "c",
+        "ps2kbd.h": "c"
     }
 }

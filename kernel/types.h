@@ -12,6 +12,7 @@ typedef signed int              int32_t;
 typedef signed long long        int64_t;
 
 typedef uint32_t                size_t;
+typedef uint64_t                uintptr_t;
 
 // boolean
 #ifndef __cplusplus

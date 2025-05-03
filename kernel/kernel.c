@@ -12,15 +12,25 @@ void init();
 void kmain(){
     init();
 
-    const char* greet = "hello from patakOS!\n";
-    const char* version = "kernel version 0.1\n";
+    puts("enter message: ");
+    char buff[16];
+    memset(buff, 0, 16);
+    console_read(buff, 16);
+    puts("kernel: ");
+    puts(buff);
 
-    consolewrite(greet, strlen(greet));
-    consolewrite(version, strlen(version));
-
-    while(1);
+    while(1){
+        // hid_keyboard_poll();
+    }
 }
 
 void init(){
-    consoleinit();
+    // // virtual memory
+    // vm_init();
+    // pic
+    pic_remap();
+    // idt
+    idt_init();
+    // console
+    console_init();
 }

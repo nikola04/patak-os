@@ -1,5 +1,14 @@
 #include "defs.h"
 
+void reverse(char* str){
+    int n = strlen(str);
+    for(int i = 0; i < n / 2; i++){
+        char temp = str[i];
+        str[i] = str[n - i - 1];
+        str[n - i - 1] = temp;
+    }
+}
+
 int64_t atoi(const char* str){
     while(*str == ' ' || *str == '\t') // remove spaces
         str++;
@@ -19,6 +28,33 @@ int64_t atoi(const char* str){
     }
     number *= sign;
     return number;
+}
+
+char *itoa(char * dest, int64_t number)
+{
+    char *s = dest;
+    if(number == 0){
+        *s++ = '0';
+        *s = '\0';
+        return dest;
+    }
+
+    bool negative = false;
+    if(number < 0){
+        negative = true;
+        number *= -1;
+    }
+
+    while(number != 0){
+        *s++ = '0' + number % 10;
+        number /= 10;
+    }
+
+    if(negative)
+        *s++ = '-';
+    *s = '\0';
+    reverse(dest);
+    return dest;
 }
 
 size_t strlen(const char* str){
@@ -41,5 +77,13 @@ char* strcpy(char* dest, const char* src){
     char *d = dest;
     while((*d++ = *src++) != 0);
     *d = '\0';
+    return dest;
+}
+
+void *memset(void *dest, int ch, size_t count) {
+    uint8_t *d = dest;
+    while (count--) {
+        *d++ = (uint8_t)ch;
+    }
     return dest;
 }

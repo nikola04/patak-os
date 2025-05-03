@@ -1,7 +1,7 @@
 #include "spinlock.h"
 #include "defs.h"
 
-void spinlockinit(struct spinlock *spinlock, const char *name){
+void spinlock_init(struct spinlock *spinlock, const char *name){
     strcpy(spinlock->name, name);
     spinlock->locked = false;
 }
@@ -11,9 +11,7 @@ int holding(struct spinlock *spinlock) {
 }
 
 void acquire(struct spinlock *spinlock) {
-    if(holding(spinlock)){
-        panic("spinlock already aquired");
-    }
+    while(holding(spinlock));
     spinlock->locked = true;
 }
 

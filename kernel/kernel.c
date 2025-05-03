@@ -12,13 +12,6 @@ void init();
 void kmain(){
     init();
 
-    puts("enter message: ");
-    char buff[16];
-    memset(buff, 0, 16);
-    console_read(buff, 16);
-    puts("kernel: ");
-    puts(buff);
-
     while(1){
         // hid_keyboard_poll();
     }

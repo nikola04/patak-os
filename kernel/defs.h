@@ -23,6 +23,7 @@ size_t                  strlen(const char *);
 int32_t                 strcmp(const char *, const char *);
 char *                  strcpy(char *, const char *);
 void *                  memset(void *dest, int ch, size_t count);
+void *                  memmove(void *, void *, size_t);
 
 // idt.c
 void                    idt_init();

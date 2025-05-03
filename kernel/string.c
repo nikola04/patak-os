@@ -80,10 +80,25 @@ char* strcpy(char* dest, const char* src){
     return dest;
 }
 
-void *memset(void *dest, int ch, size_t count) {
+void *memset(void *dest, int ch, size_t count){
     uint8_t *d = dest;
     while (count--) {
         *d++ = (uint8_t)ch;
+    }
+    return dest;
+}
+
+void *memmove(void *dest, void *src, size_t n){
+    uint8_t* cdest = (uint8_t *) dest;
+    uint8_t* csrc = (uint8_t *) src;
+    
+    if(dest <= src){
+        for(size_t i = 0; i < n; i++)
+            *cdest++ = *csrc++;
+    }else{ // ensure no data loss
+        cdest += n - 1, csrc += n - 1;
+        for(size_t i = 0; i < n; i++)
+            *cdest-- = *csrc--;
     }
     return dest;
 }

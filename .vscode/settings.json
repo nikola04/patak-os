@@ -10,6 +10,7 @@
         "vm.h": "c",
         "idt.h": "c",
         "kbd.h": "c",
-        "ps2kbd.h": "c"
+        "ps2kbd.h": "c",
+        "console.h": "c"
     }
 }

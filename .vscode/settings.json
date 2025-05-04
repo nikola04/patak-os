@@ -11,6 +11,7 @@
         "idt.h": "c",
         "kbd.h": "c",
         "ps2kbd.h": "c",
-        "console.h": "c"
+        "console.h": "c",
+        "args.h": "c"
     }
 }

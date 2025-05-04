@@ -84,9 +84,10 @@ init_pm32:
     mov ebp, 0x90000
     mov esp, ebp
 
-    ; Enable A20
+    ; Enable A20 - fast gate
     in al, 0x92
     or al, 2
+    and al, 0xFE
     out 0x92, al
 
 main64:

@@ -20,13 +20,6 @@ void panic(const char *panic){
 
 static uint16_t *vga = (uint16_t *)0xb8000;
 
-void refresh_color(){
-    for(int i = 0; i < 25*80; i++) {
-        uint8_t ch = vga[i] & 0x00FF;
-        vga[i] = ch | VGA_CHAR_ATR;
-    }
-}
-
 const uint16_t _blank = 0xFF | VGA_CHAR_ATR;
 void vga_putc(char c){
     uint32_t pos = 0;
@@ -121,9 +114,19 @@ void puts(const char *str){
     }
 }
 
+void cprintf(const char* fmt, ...){
+    va_list args;
+    acquire(&console.lock);
+
+    va_start(args, fmt);
+    fnprintf(console_putc, fmt, args);
+    va_end(args);
+
+    release(&console.lock);
+}
+
 void console_init(){
     spinlock_init(&console.lock, "console");
-    refresh_color();
     memset(console.input.buffer, 0, INPUT_BUF);
     console.input.r = console.input.w = console.input.e = 0;
 }

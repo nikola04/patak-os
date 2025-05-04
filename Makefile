@@ -33,6 +33,8 @@ OBJS = 		\
 			$B/pic.o\
 			$B/idt.o\
 			$B/spinlock.o\
+			$B/printf.o\
+			$B/debug.o\
 			$B/console.o\
 			$B/string.o\
 
@@ -71,7 +73,7 @@ $(B_BIN): $(BL)/main.asm
 .PHONY: qemu clean
 # Running with QEMU
 qemu: $(TARGET)
-	$(QEMU) -usb -device nec-usb-xhci -drive format=raw,file=$(TARGET)
+	$(QEMU) -debugcon stdio -usb -device nec-usb-xhci -drive format=raw,file=$(TARGET)
 
 # Clean build dir
 clean:

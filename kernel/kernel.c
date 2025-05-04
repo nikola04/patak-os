@@ -13,11 +13,11 @@ void kmain(){
     init();
 
     while(1){
-        // hid_keyboard_poll();
     }
 }
 
 void init(){
+    e9printf("\ne9debug log:\n");
     // // virtual memory
     // vm_init();
     // pic

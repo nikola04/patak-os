@@ -2,7 +2,9 @@
 #define DEFS_H
 
 #include "types.h"
+#include "printf.h"
 #include "spinlock.h"
+#include "args.h"
 
 // console.c
 void                    puts(const char *);
@@ -10,6 +12,7 @@ void                    console_intr(int32_t (*)(void));
 void                    console_init();
 void                    console_read(char *, size_t);
 void                    panic(const char *);
+void                    cprintf(const char *fmt, ...);
 
 // spinlock.c
 void                    spinlock_init(struct spinlock *, const char *);
@@ -24,6 +27,12 @@ int32_t                 strcmp(const char *, const char *);
 char *                  strcpy(char *, const char *);
 void *                  memset(void *dest, int ch, size_t count);
 void *                  memmove(void *, void *, size_t);
+
+// printf.c
+void                    fnprintf(printf_putcfn putc, const char *fmt, va_list args);
+
+// debug.c
+void                    e9printf(const char* fmt, ...);
 
 // idt.c
 void                    idt_init();

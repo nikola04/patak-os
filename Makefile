@@ -16,7 +16,7 @@ BL := 		bootloader
 K := 		kernel
 
 # Flags
-CFLAGS := 	-g -m64 -ffreestanding -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -lgcc
+CFLAGS := 	-g -m64 -ffreestanding -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -lgcc -fstack-protector-strong
 LDFLAGS :=	-T $(LCONFIG) --oformat binary
 
 # Files
@@ -28,6 +28,7 @@ OS_BIN :=	$(BI)/os.bin
 OBJS = 		\
 			$B/kernel.asm.o\
 			$B/kbdintr.asm.o\
+			$B/stack_guard.o\
 			$B/kernel.o\
 			$B/ps2kbd.o\
 			$B/pic.o\

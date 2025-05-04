@@ -67,6 +67,11 @@ void fnprintf(printf_putcfn putc, const char* fmt, va_list args){
             case 'c': // char
                 putc((char) va_arg(args, int));
                 break;
+            case 's': // string
+                const char *s = va_arg(args, const char *);
+                while(*s != '\0')
+                    putc(*s++);
+                break;
             case 'd': // int
                 printlong(putc, va_arg(args, int));
                 break;

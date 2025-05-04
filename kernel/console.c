@@ -6,8 +6,15 @@
 
 void console_putc(char c);
 
+void puts(const char *str){
+    for(int i = 0; i < strlen(str); i++)
+        console_putc(str[i]);
+}
+
 void panic(const char *panic){
     cli();
+
+    e9printf("panic: %s!\n", panic);
 
     puts("\npanic: ");
     puts(panic);
@@ -106,12 +113,6 @@ void console_read(char *dst, size_t n){ // should implement locking
     *dst = '\0';
     puts(""); // <- magically works with this...
     return;
-}
-
-void puts(const char *str){
-    for(int i = 0; i < strlen(str); i++){
-        console_putc(str[i]);
-    }
 }
 
 void cprintf(const char* fmt, ...){

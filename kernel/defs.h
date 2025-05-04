@@ -7,12 +7,11 @@
 #include "args.h"
 
 // console.c
-void                    puts(const char *);
-void                    console_intr(int32_t (*)(void));
 void                    console_init();
+void                    console_intr(int32_t (*)(void));
 void                    console_read(char *, size_t);
-void                    panic(const char *);
 void                    cprintf(const char *fmt, ...);
+void                    panic(const char *);
 
 // spinlock.c
 void                    spinlock_init(struct spinlock *, const char *);

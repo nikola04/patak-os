@@ -8,9 +8,9 @@ $ git clone https://github.com/nikola04/patak-os.git
 
 # Run
 ### QEMU:  
-To run make sure you have installed QEMU and cros compilers from Makefile. There is script in Makefile for runing image so just run:
+To run make sure you have installed QEMU and cros compilers from Makefile. To start(compile and run) image just execute:
 ```
-$ make & make qemu
+$ make qemu
 ```
 
 # Scripts
